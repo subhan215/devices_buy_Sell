@@ -58,7 +58,7 @@ def upload_file(filepath):
             placeholders = ', '.join(['%s'] * len(row))
             values = tuple(row.values())
 
-            sql = f"INSERT INTO mobile_prices ({columns}) VALUES ({placeholders})"
+            sql = f"INSERT INTO devices ({columns}) VALUES ({placeholders})"
             cursor.execute(sql, values)
 
         conn.commit()

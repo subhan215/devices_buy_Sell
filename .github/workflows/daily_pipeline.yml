@@ -2,7 +2,7 @@ name: 📦 Daily Hanggroup Pipeline
 
 on:
   schedule:
-    - cron: '1 13 * * *'  # Every day at 3 AM UTC
+    - cron: '4 13 * * *'  # Every day at 3 AM UTC
   workflow_dispatch:     # Allows manual trigger from GitHub UI
 
 jobs:
