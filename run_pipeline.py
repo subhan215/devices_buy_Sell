@@ -25,7 +25,7 @@ if not DATABASE_URL:
 FOLDER_PATH = "processed"
 EXPECTED_COLUMNS = [
     "box_status", "category", "make", "model", "storage", "color",
-    "grade", "lock_status", "active_status", "carrier", "price", "serial"
+    "grade", "lock_status", "active_status", "carrier", "price", "serial_number"
 ]
 
 def clean_column_names(df):
