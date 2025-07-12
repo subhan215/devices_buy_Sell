@@ -1,147 +1,160 @@
 import pandas as pd
 import re
+import os
 from pathlib import Path
 
-# Load the MacBook Excel file
-df = pd.read_excel("sections/macbook.xlsx", header=None)
+def main():
+    # Check if input file exists
+    input_file = "sections/macbook.xlsx"
+    if not os.path.exists(input_file):
+        print(f"❌ Input file not found: {input_file}")
+        return
 
-def clean_price(val):
-    match = re.search(r"-?\d+(?:\.\d+)?", str(val))
-    return float(match.group(0)) if match else None
+    # Load the MacBook Excel file
+    df = pd.read_excel(input_file, header=None)
 
-def extract_serials(text):
-    return re.findall(r"\b[A-Z0-9]{5,}\b", text)
+    def clean_price(val):
+        match = re.search(r"-?\d+(?:\.\d+)?", str(val))
+        return float(match.group(0)) if match else None
 
-records = []
-current_model_header = ""
+    def extract_serials(text):
+        return re.findall(r"\b[A-Z0-9]{5,}\b", text)
 
-# Loop through each row in the DataFrame
-for _, row in df.iterrows():
-    first_col = str(row[0]) if pd.notna(row[0]) else ""
+    records = []
+    current_model_header = ""
 
-    # Update current model header
-    if "macbook" in first_col.lower() and not re.search(r"\b[A-Z0-9]{5,}\b", first_col):
-        current_model_header = first_col.strip()
-        continue
+    # Loop through each row in the DataFrame
+    for _, row in df.iterrows():
+        first_col = str(row[0]) if pd.notna(row[0]) else ""
 
-    # Skip non-data rows
-    if any("228, 228, 228" in str(cell) or "224, 233, 243" in str(cell) for cell in row):
-        continue
-    if "-" not in first_col:
-        continue
+        # Update current model header
+        if "macbook" in first_col.lower() and not re.search(r"\b[A-Z0-9]{5,}\b", first_col):
+            current_model_header = first_col.strip()
+            continue
 
-    # Split storage and serial part
-    try:
-        storage_part, serial_part = map(str.strip, first_col.split("-", 1))
-    except ValueError:
-        continue
-    storage = storage_part.upper()
-    serials = extract_serials(serial_part)
-    if not serials:
-        continue
+        # Skip non-data rows
+        if any("228, 228, 228" in str(cell) or "224, 233, 243" in str(cell) for cell in row):
+            continue
+        if "-" not in first_col:
+            continue
 
-    # Try 2nd to 5th columns, else 3rd to 6th
-    possible_price_sets = [
-        [row[1], row[2], row[3], row[4]],
-        [row[2], row[3], row[4], row[5]]
-    ]
-    prices = None
-    for price_set in possible_price_sets:
-        if all(clean_price(p) is not None for p in price_set):
-            prices = [clean_price(p) for p in price_set]
-            break
+        # Split storage and serial part
+        try:
+            storage_part, serial_part = map(str.strip, first_col.split("-", 1))
+        except ValueError:
+            continue
+        storage = storage_part.upper()
+        serials = extract_serials(serial_part)
+        if not serials:
+            continue
 
-    if not prices:
-        continue
+        # Try 2nd to 5th columns, else 3rd to 6th
+        possible_price_sets = [
+            [row[1], row[2], row[3], row[4]],
+            [row[2], row[3], row[4], row[5]]
+        ]
+        prices = None
+        for price_set in possible_price_sets:
+            if all(clean_price(p) is not None for p in price_set):
+                prices = [clean_price(p) for p in price_set]
+                break
 
-    model = current_model_header.strip()
-    box_statuses = ["Sealed", "Unsealed", "Unsealed", "Unsealed", "Unsealed"]
-    grades = ["", "", "A", "B", "mdm"]
-    active_statuses = ["not active", "active", "active", "active", "active"]
+        if not prices:
+            continue
 
-    for serial in serials:
-        records.append({
-            "box_status": "Sealed",
-            "category": "laptops",
-            "make": "Apple",
-            "model": model,
-            "storage": storage,
-            "color": "",
-            "grade": "",
-            "lock_status": "",
-            "active_status": "not active",
-            "carrier": "",
-            "serial_number": serial,
-            "price": prices[0]
-        })
-        records.append({
-            "box_status": "Unsealed",
-            "category": "laptops",
-            "make": "Apple",
-            "model": model,
-            "storage": storage,
-            "color": "",
-            "grade": "",
-            "lock_status": "",
-            "active_status": "active",
-            "carrier": "",
-            "serial_number": serial,
-            "price": prices[1]
-        })
-        records.append({
-            "box_status": "Unsealed",
-            "category": "laptops",
-            "make": "Apple",
-            "model": model,
-            "storage": storage,
-            "color": "",
-            "grade": "A",
-            "lock_status": "",
-            "active_status": "active",
-            "carrier": "",
-            "serial_number": serial,
-            "price": prices[2]
-        })
-        records.append({
-            "box_status": "Unsealed",
-            "category": "laptops",
-            "make": "Apple",
-            "model": model,
-            "storage": storage,
-            "color": "",
-            "grade": "B",
-            "lock_status": "",
-            "active_status": "active",
-            "carrier": "",
-            "serial_number": serial,
-            "price": prices[2]  # Same as A
-        })
-        records.append({
-            "box_status": "Unsealed",
-            "category": "laptops",
-            "make": "Apple",
-            "model": model,
-            "storage": storage,
-            "color": "",
-            "grade": "mdm",
-            "lock_status": "",
-            "active_status": "active",
-            "carrier": "",
-            "serial_number": serial,
-            "price": prices[3]
-        })
+        model = current_model_header.strip()
+        box_statuses = ["Sealed", "Unsealed", "Unsealed", "Unsealed", "Unsealed"]
+        grades = ["", "", "A", "B", "mdm"]
+        active_statuses = ["not active", "active", "active", "active", "active"]
 
+        for serial in serials:
+            records.append({
+                "box_status": "Sealed",
+                "category": "laptops",
+                "make": "Apple",
+                "model": model,
+                "storage": storage,
+                "color": "",
+                "grade": "",
+                "lock_status": "",
+                "active_status": "not active",
+                "carrier": "",
+                "serial_number": serial,
+                "price": prices[0]
+            })
+            records.append({
+                "box_status": "Unsealed",
+                "category": "laptops",
+                "make": "Apple",
+                "model": model,
+                "storage": storage,
+                "color": "",
+                "grade": "",
+                "lock_status": "",
+                "active_status": "active",
+                "carrier": "",
+                "serial_number": serial,
+                "price": prices[1]
+            })
+            records.append({
+                "box_status": "Unsealed",
+                "category": "laptops",
+                "make": "Apple",
+                "model": model,
+                "storage": storage,
+                "color": "",
+                "grade": "A",
+                "lock_status": "",
+                "active_status": "active",
+                "carrier": "",
+                "serial_number": serial,
+                "price": prices[2]
+            })
+            records.append({
+                "box_status": "Unsealed",
+                "category": "laptops",
+                "make": "Apple",
+                "model": model,
+                "storage": storage,
+                "color": "",
+                "grade": "B",
+                "lock_status": "",
+                "active_status": "active",
+                "carrier": "",
+                "serial_number": serial,
+                "price": prices[2]  # Same as A
+            })
+            records.append({
+                "box_status": "Unsealed",
+                "category": "laptops",
+                "make": "Apple",
+                "model": model,
+                "storage": storage,
+                "color": "",
+                "grade": "mdm",
+                "lock_status": "",
+                "active_status": "active",
+                "carrier": "",
+                "serial_number": serial,
+                "price": prices[3]
+            })
 
-# Create DataFrame and reorder columns
-final_df = pd.DataFrame(records)
-final_df = final_df[[ 
-    "box_status", "category", "make", "model", "storage", "color",
-    "grade", "lock_status", "active_status", "carrier", "serial_number", "price"
-]]
+    # Create output directory
+    output_dir = "processed"
+    os.makedirs(output_dir, exist_ok=True)
 
-# Save to Excel
-Path("processed").mkdir(exist_ok=True)
-output_path = "processed/macbook_Final.xlsx"
-final_df.to_excel(output_path, index=False)
+    # Create DataFrame and reorder columns
+    final_df = pd.DataFrame(records)
+    final_df = final_df[[ 
+        "box_status", "category", "make", "model", "storage", "color",
+        "grade", "lock_status", "active_status", "carrier", "serial_number", "price"
+    ]]
 
-print("✅ Saved to processed/macbook_Final.xlsx")
+    # Save to Excel
+    output_path = "processed/macbook_Final.xlsx"
+    final_df.to_excel(output_path, index=False)
+
+    print("✅ Saved to processed/macbook_Final.xlsx")
+
+if __name__ == "__main__":
+    main()

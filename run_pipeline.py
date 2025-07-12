@@ -25,7 +25,7 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # STEP 2: Constants
-FOLDER_PATH = "cleaned_outputs"
+FOLDER_PATH = "processed"
 EXPECTED_COLUMNS = [
     "box_status", "category", "make", "model", "storage", "color",
     "grade", "lock_status", "active_status", "carrier", "price", "serial"
@@ -65,7 +65,6 @@ def main():
         extractor.main()
         cleaner.main()
         filer.main()
-
         iphone_new.main()
         samsung.main()
         ipad.main()
