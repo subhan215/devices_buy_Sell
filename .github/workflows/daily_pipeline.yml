@@ -3,7 +3,7 @@ name: 📦 Daily Hanggroup Pipeline
 on:
   schedule:
     - cron: '0 3 * * *'  # Every day at 3 AM UTC
-  workflow_dispatch:     # Allows manual runs too
+  workflow_dispatch:     # Allows manual trigger from GitHub UI
 
 jobs:
   run-pipeline:
@@ -23,8 +23,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 🚀 Run pipeline and upload
-        run: python upload_to_supabase.py  # or run_pipeline.py
+      - name: 🚀 Run pipeline and upload to PostgreSQL
+        run: python run_pipeline.py
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

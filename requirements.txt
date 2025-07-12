@@ -2,4 +2,4 @@ requests
 beautifulsoup4
 pandas
 openpyxl
-supabase
+psycopg2-binary

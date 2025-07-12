@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from supabase import create_client
+import psycopg2
 from datetime import date
 from pathlib import Path
 
@@ -15,14 +15,11 @@ from scripts import iphone_used
 from scripts import macbook
 from scripts import samsung
 
-# STEP 1: Setup Supabase client
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+# STEP 1: Setup PostgreSQL connection string
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-if not SUPABASE_URL or not SUPABASE_KEY:
-    raise EnvironmentError("❌ SUPABASE_URL and SUPABASE_KEY must be set as environment variables.")
-
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+if not DATABASE_URL:
+    raise EnvironmentError("❌ DATABASE_URL must be set as an environment variable.")
 
 # STEP 2: Constants
 FOLDER_PATH = "processed"
@@ -44,6 +41,7 @@ def upload_file(filepath):
             return
 
         df = clean_column_names(df)
+
         for col in EXPECTED_COLUMNS:
             if col not in df.columns:
                 df[col] = None
@@ -51,8 +49,21 @@ def upload_file(filepath):
         df = df[EXPECTED_COLUMNS]
         df["fetched_at"] = date.today()
 
+        # Connect to Postgres and insert
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+
         for row in df.to_dict(orient="records"):
-            supabase.table("mobile_prices").insert(row).execute()
+            columns = ', '.join(row.keys())
+            placeholders = ', '.join(['%s'] * len(row))
+            values = tuple(row.values())
+
+            sql = f"INSERT INTO mobile_prices ({columns}) VALUES ({placeholders})"
+            cursor.execute(sql, values)
+
+        conn.commit()
+        cursor.close()
+        conn.close()
 
         print(f"✅ Uploaded {len(df)} rows from {Path(filepath).name}")
     except Exception as e:
@@ -75,7 +86,7 @@ def main():
         print(f"❌ Pipeline step failed: {e}")
         return
 
-    print("\n📤 Uploading cleaned files to Supabase...")
+    print("\n📤 Uploading cleaned files to PostgreSQL...")
 
     if not os.path.exists(FOLDER_PATH):
         print(f"❌ Folder not found: {FOLDER_PATH}")
