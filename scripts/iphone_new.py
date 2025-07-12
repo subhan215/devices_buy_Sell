@@ -4,7 +4,7 @@ import os
 
 def main():
     # Check if input file exists
-    input_file = "sections/iPhone_New_(US_Spec).xlsx"
+    input_file = "sections/iphone_new_(us_spec).xlsx"
     if not os.path.exists(input_file):
         print(f"❌ Input file not found: {input_file}")
         return
