@@ -46,7 +46,7 @@ def extract_date_from_url(url):
         print(f"⚠️ Could not extract date from URL: {e}")
     return date.today()
 
-def upload_file(filepath, report_date):
+def upload_file(filepath, fetched_at):
     print(f"\n📄 Uploading: {filepath}")
     try:
         df = pd.read_excel(filepath)
@@ -61,8 +61,7 @@ def upload_file(filepath, report_date):
                 df[col] = None
 
         df = df[EXPECTED_COLUMNS]
-        df["fetched_at"] = date.today()
-        df["report_date"] = report_date
+        df["fetched_at"] = fetched_at  # ✅ Use extracted date
 
         # Connect to Postgres and insert
         conn = psycopg2.connect(DATABASE_URL)
@@ -89,8 +88,8 @@ def main():
 
     try:
         url = extractor.main()
-        extracted_date = extract_date_from_url(url)
-        print(f"📅 Extracted date from URL: {extracted_date}")
+        fetched_at = extract_date_from_url(url)
+        print(f"📅 Extracted fetched_at date from URL: {fetched_at}")
 
         cleaner.main()
         filer.main()
@@ -112,7 +111,7 @@ def main():
 
     for file in os.listdir(FOLDER_PATH):
         if file.endswith(".xlsx"):
-            upload_file(os.path.join(FOLDER_PATH, file), extracted_date)
+            upload_file(os.path.join(FOLDER_PATH, file), fetched_at)
 
     print("🎉 All data uploaded successfully.")
 
