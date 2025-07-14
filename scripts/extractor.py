@@ -53,9 +53,10 @@ def main():
         for row in rows[:3]:
             print(row)
         save_to_excel(rows)
-      return url  
+        return url  # <-- FIXED INDENTATION
     except Exception as e:
         print(f"❌ Error: {e}")
+
 
 if __name__ == "__main__":
     main()
