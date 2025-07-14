@@ -53,6 +53,7 @@ def main():
         for row in rows[:3]:
             print(row)
         save_to_excel(rows)
+      return url  
     except Exception as e:
         print(f"❌ Error: {e}")
 

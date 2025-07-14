@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import psycopg2
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 # STEP 0: Import pipeline stages
@@ -32,7 +32,21 @@ def clean_column_names(df):
     df.columns = [col.strip().lower().replace(" ", "_") for col in df.columns]
     return df
 
-def upload_file(filepath):
+def extract_date_from_url(url):
+    try:
+        slug = url.split("/")[-1]  # Get the last part of the URL
+        parts = slug.split("-")
+        for i in range(len(parts) - 1):
+            if parts[i].isdigit() and parts[i+1].isalpha():
+                day = int(parts[i])
+                month_str = parts[i+1].capitalize()
+                year = date.today().year
+                return datetime.strptime(f"{day} {month_str} {year}", "%d %B %Y").date()
+    except Exception as e:
+        print(f"⚠️ Could not extract date from URL: {e}")
+    return date.today()
+
+def upload_file(filepath, report_date):
     print(f"\n📄 Uploading: {filepath}")
     try:
         df = pd.read_excel(filepath)
@@ -48,6 +62,7 @@ def upload_file(filepath):
 
         df = df[EXPECTED_COLUMNS]
         df["fetched_at"] = date.today()
+        df["report_date"] = report_date
 
         # Connect to Postgres and insert
         conn = psycopg2.connect(DATABASE_URL)
@@ -73,7 +88,10 @@ def main():
     print("🚀 Starting full Hanggroup pipeline...")
 
     try:
-        extractor.main()
+        url = extractor.main()
+        extracted_date = extract_date_from_url(url)
+        print(f"📅 Extracted date from URL: {extracted_date}")
+
         cleaner.main()
         filer.main()
         iphone_new.main()
@@ -94,7 +112,7 @@ def main():
 
     for file in os.listdir(FOLDER_PATH):
         if file.endswith(".xlsx"):
-            upload_file(os.path.join(FOLDER_PATH, file))
+            upload_file(os.path.join(FOLDER_PATH, file), extracted_date)
 
     print("🎉 All data uploaded successfully.")
 
