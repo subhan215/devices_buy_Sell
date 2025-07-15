@@ -33,7 +33,7 @@ def main():
 
         # Parse model parts
         parts = first_col.split()
-        make = "iPad"
+        make = "Apple"
         storage = ""
         carrier = ""
         model_parts = []

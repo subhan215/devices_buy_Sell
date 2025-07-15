@@ -80,7 +80,7 @@ def main():
                 # Base row (no carrier)
                 records.append({
                     "S.No": "",
-                    "Make": "iPhone",
+                    "Make": "Apple",
                     "Model": model,
                     "Storage": storage,
                     "Color": None,
@@ -104,7 +104,7 @@ def main():
                     for i in range(6):
                         records.append({
                             "S.No": "",
-                            "Make": "iPhone",
+                            "Make": "Apple",
                             "Model": model,
                             "Storage": storage,
                             "Color": None,
@@ -122,7 +122,7 @@ def main():
                     for i in range(6):
                         records.append({
                             "S.No": "",
-                            "Make": "iPhone",
+                            "Make": "Apple",
                             "Model": model,
                             "Storage": storage,
                             "Color": None,

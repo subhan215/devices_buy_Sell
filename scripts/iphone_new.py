@@ -86,14 +86,14 @@ def main():
 
             # Base rows
             records.append({
-                "S.No": "", "Make": "iPhone", "Model": model, "Storage": storage,
+                "S.No": "", "Make": "Apple", "Model": model, "Storage": storage,
                 "Color": color, "Box Status": "Sealed", "Activate Status": "Non-Active",
                 "Category": "Cellphone", "Grade": "", "Lock Status": current_lock_status,
                 "Carrier": None, "Price": base_price1
             })
 
             records.append({
-                "S.No": "", "Make": "iPhone", "Model": model, "Storage": storage,
+                "S.No": "", "Make": "Apple", "Model": model, "Storage": storage,
                 "Color": color, "Box Status": "Unsealed", "Activate Status": "Active",
                 "Category": "Cellphone", "Grade": "", "Lock Status": current_lock_status,
                 "Carrier": None, "Price": base_price2
@@ -104,13 +104,13 @@ def main():
                 current_cricket = None
                 if current_red is not None:
                     records.append({
-                        "S.No": "", "Make": "iPhone", "Model": model, "Storage": storage,
+                        "S.No": "", "Make": "Apple", "Model": model, "Storage": storage,
                         "Color": "Red", "Box Status": "Sealed", "Activate Status": "Non-Active",
                         "Category": "Cellphone", "Grade": "", "Lock Status": "Unlocked",
                         "Carrier": None, "Price": base_price1 - current_red
                     })
                     records.append({
-                        "S.No": "", "Make": "iPhone", "Model": model, "Storage": storage,
+                        "S.No": "", "Make": "Apple", "Model": model, "Storage": storage,
                         "Color": "Red", "Box Status": "Unsealed", "Activate Status": "Active",
                         "Category": "Cellphone", "Grade": "", "Lock Status": "Unlocked",
                         "Carrier": None, "Price": base_price2 - current_red
@@ -120,13 +120,13 @@ def main():
             if current_lock_status == "Locked":
                 if current_flex is not None:
                     records.append({
-                        "S.No": "", "Make": "iPhone", "Model": model, "Storage": storage,
+                        "S.No": "", "Make": "Apple", "Model": model, "Storage": storage,
                         "Color": color, "Box Status": "Sealed", "Activate Status": "Non-Active",
                         "Category": "Cellphone", "Grade": "", "Lock Status": "Locked",
                         "Carrier": "Flex", "Price": base_price1 + current_flex
                     })
                     records.append({
-                        "S.No": "", "Make": "iPhone", "Model": model, "Storage": storage,
+                        "S.No": "", "Make": "Apple", "Model": model, "Storage": storage,
                         "Color": color, "Box Status": "Unsealed", "Activate Status": "Active",
                         "Category": "Cellphone", "Grade": "", "Lock Status": "Locked",
                         "Carrier": "Flex", "Price": base_price2 + current_flex
@@ -134,13 +134,13 @@ def main():
 
                 if current_cricket is not None:
                     records.append({
-                        "S.No": "", "Make": "iPhone", "Model": model, "Storage": storage,
+                        "S.No": "", "Make": "Apple", "Model": model, "Storage": storage,
                         "Color": color, "Box Status": "Sealed", "Activate Status": "Non-Active",
                         "Category": "Cellphone", "Grade": "", "Lock Status": "Locked",
                         "Carrier": "Cricket", "Price": base_price1 - current_cricket
                     })
                     records.append({
-                        "S.No": "", "Make": "iPhone", "Model": model, "Storage": storage,
+                        "S.No": "", "Make": "Apple", "Model": model, "Storage": storage,
                         "Color": color, "Box Status": "Unsealed", "Activate Status": "Active",
                         "Category": "Cellphone", "Grade": "", "Lock Status": "Locked",
                         "Carrier": "Cricket", "Price": base_price2 - current_cricket
